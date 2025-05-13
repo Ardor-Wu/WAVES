@@ -4,23 +4,31 @@ import torch
 from torchvision import transforms
 from PIL import Image
 
+'''
+(
+    "/scratch/qilong3/WAVES/data/out/strength_12.75",
+    "/scratch/qilong3/WAVES/processed_images_strength_12.75.pt"
+),
+(
+    "/scratch/qilong3/WAVES/data/out/strength_31.875",
+    "/scratch/qilong3/WAVES/processed_images_strength_31.875.pt"
+),
+(
+    "/scratch/qilong3/WAVES/data/out/strength_12",
+    "/scratch/qilong3/WAVES/processed_images_strength_12.pt"
+),
+(
+    "/scratch/qilong3/WAVES/data/out/strength_31",
+    "/scratch/qilong3/WAVES/processed_images_strength_31.pt"
+),
+'''
+
 # Input directories with output filenames
 input_configs = [
+
     (
-        "/scratch/qilong3/WAVES/data/out/strength_12.75",
-        "/scratch/qilong3/WAVES/processed_images_strength_12.75.pt"
-    ),
-    (
-        "/scratch/qilong3/WAVES/data/out/strength_31.875",
-        "/scratch/qilong3/WAVES/processed_images_strength_31.875.pt"
-    ),
-    (
-        "/scratch/qilong3/WAVES/data/out/strength_12",
-        "/scratch/qilong3/WAVES/processed_images_strength_12.pt"
-    ),
-    (
-        "/scratch/qilong3/WAVES/data/out/strength_31",
-        "/scratch/qilong3/WAVES/processed_images_strength_31.pt"
+        "/scratch/qilong3/WAVES/data/out/hidden/strength_12.0",
+        "/scratch/qilong3/WAVES/processed_images_strength_hidden12.pt"
     ),
 ]
 
@@ -30,7 +38,7 @@ pattern = re.compile(r"image_batch(\d+)_idx(\d+)\.png")
 # Transformation: to tensor and normalize to [-1, 1]
 transform = transforms.Compose([
     transforms.ToTensor(),
-    transforms.Normalize(mean=[0.5]*3, std=[0.5]*3)
+    transforms.Normalize(mean=[0.5] * 3, std=[0.5] * 3)
 ])
 
 # Process each directory separately

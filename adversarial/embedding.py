@@ -5,11 +5,12 @@ from torch.utils.data import DataLoader, Dataset
 from torchvision.utils import save_image
 import torchvision.transforms as transforms
 from tqdm.auto import tqdm  # progress bar
-from .feature_extractors import (
+from feature_extractors import (
     ResNet18Embedding,
     VAEEmbedding,
     ClipEmbedding,
     KLVAEEmbedding,
+    HiddenEmbedding,
 )
 import argparse
 
@@ -25,14 +26,14 @@ def parse_arguments():
         "--encoder",
         type=str,
         default="resnet18",
-        choices=["resnet18", "clip", "klvae8", "sdxlvae", "klvae16"],
+        choices=["resnet18", "clip", "klvae8", "sdxlvae", "klvae16", "hidden"],
         help="Embedding backbone to use.",
     )
     parser.add_argument(
         "--strength",
         type=float,
         default=2,
-        choices=[2, 4, 6, 8],
+        choices=[2, 4, 6, 8, 12, 31],
         help="Attack strength multiplier (scales eps and alpha)",
     )
     parser.add_argument(
@@ -49,11 +50,11 @@ def parse_arguments():
 
 
 def adv_emb_attack(
-    wm_img_path: str,
-    encoder: str,
-    strength: float,
-    output_path: str,
-    device: torch.device,
+        wm_img_path: str,
+        encoder: str,
+        strength: float,
+        output_path: str,
+        device: torch.device,
 ):
     """Run the adversarial embedding attack with a tqdm progress bar.
 
@@ -84,9 +85,11 @@ def adv_emb_attack(
         embedding_model = VAEEmbedding("stabilityai/sdxl-vae")
     elif encoder == "klvae16":
         embedding_model = KLVAEEmbedding("kl-f16")
+    elif encoder == "hidden":
+        embedding_model = HiddenEmbedding(30)
     else:
         raise ValueError(f"Unsupported encoder: {encoder}")
-
+    # if encoder != "hidden":
     embedding_model = embedding_model.to(device).eval()
     print("Embedding model loaded on", device)
 
@@ -136,7 +139,7 @@ class SimpleImageFolder(Dataset):
             os.path.join(root, f)
             for f in os.listdir(root)
             if os.path.isfile(os.path.join(root, f))
-            and os.path.splitext(f)[1].lower() in self.extensions
+               and os.path.splitext(f)[1].lower() in self.extensions
         ]
 
     def __getitem__(self, index):
@@ -152,14 +155,14 @@ class SimpleImageFolder(Dataset):
 
 class WarmupPGDEmbedding:
     def __init__(
-        self,
-        model,
-        device,
-        eps=8 / 255,
-        alpha=2 / 255,
-        steps=10,
-        loss_type="l2",
-        random_start=True,
+            self,
+            model,
+            device,
+            eps=8 / 255,
+            alpha=2 / 255,
+            steps=10,
+            loss_type="l2",
+            random_start=True,
     ):
         self.model = model
         self.eps = eps
@@ -219,14 +222,14 @@ if __name__ == "__main__":
         n_gpu = torch.cuda.device_count()
         if args.gpu >= n_gpu or args.gpu < -1:
             raise ValueError(
-                f"Requested GPU index {args.gpu} is out of range (0‑{n_gpu-1})"
+                f"Requested GPU index {args.gpu} is out of range (0‑{n_gpu - 1})"
             )
         device = torch.device(f"cuda:{args.gpu}")
 
     adv_emb_attack(
-        wm_img_path="data/wm_imgs",
+        wm_img_path="/scratch/qilong3/WAVES/data/in",
         encoder=args.encoder,
         strength=args.strength,
-        output_path="data/adv_out",
+        output_path="/scratch/qilong3/WAVES/data/out/hidden",
         device=device,
     )

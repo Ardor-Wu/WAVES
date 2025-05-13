@@ -2,7 +2,7 @@
 <module type="PYTHON_MODULE" version="4">
   <component name="NewModuleRootManager">
     <content url="file://$MODULE_DIR$" />
-    <orderEntry type="jdk" jdkName="Remote Python 3.11.11 (sftp://qilong3@madison.ece.illinois.edu:22/scratch/qilong3/anaconda3/envs/waves/bin/python)" jdkType="Python SDK" />
+    <orderEntry type="jdk" jdkName="waves" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
   <component name="PyDocumentationSettings">
